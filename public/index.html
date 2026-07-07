@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CodeAlpha URL Shortener - Shorten your long URLs instantly">
+    <meta name="keywords" content="url shortener, link shortener, codealpha">
+    <meta name="author" content="CodeAlpha Intern">
+    
+    <title> URL Shortener</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-link"></i>
+                <h1>URL Shortener By MANISH MEHRA</h1>
+            </div>
+            <p class="subtitle">Transform your long URLs into short, manageable links</p>
+        </header>
+
+        <!-- Main Card -->
+        <main class="card glassmorphism">
+            <!-- URL Input Section -->
+            <div class="input-section">
+                <div class="input-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-link input-icon"></i>
+                        <input 
+                            type="url" 
+                            id="urlInput" 
+                            placeholder="Enter your long URL here..." 
+                            autocomplete="off"
+                            aria-label="URL to shorten"
+                        >
+                    </div>
+                    <button id="shortenBtn" class="btn-primary">
+                        <span class="btn-text">Shorten URL</span>
+                        <span class="btn-loader" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Advanced Options -->
+                <div class="advanced-options" id="advancedOptions" style="display: none;">
+                    <div class="option-row">
+                        <div class="option-group">
+                            <label for="customAlias">
+                                <i class="fas fa-tag"></i> Custom Alias (optional)
+                            </label>
+                            <input 
+                                type="text" 
+                                id="customAlias" 
+                                placeholder="e.g., my-link" 
+                                maxlength="20"
+                                pattern="[a-zA-Z0-9_-]{4,20}"
+                            >
+                        </div>
+                        <div class="option-group">
+                            <label for="expiresIn">
+                                <i class="fas fa-clock"></i> Expires In (days)
+                            </label>
+                            <input 
+                                type="number" 
+                                id="expiresIn" 
+                                placeholder="Leave empty for no expiry" 
+                                min="1" 
+                                max="365"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle Advanced Options -->
+                <button class="btn-advanced" id="toggleAdvanced">
+                    <i class="fas fa-cog"></i> Advanced Options
+                </button>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section" id="resultSection" style="display: none;">
+                <div class="result-card">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle success-icon"></i>
+                        <h3>Your shortened URL is ready!</h3>
+                    </div>
+                    
+                    <div class="shortened-url">
+                        <div class="url-display">
+                            <a id="shortUrl" href="#" target="_blank" rel="noopener noreferrer"></a>
+                        </div>
+                        <button id="copyBtn" class="btn-copy" title="Copy to clipboard">
+                            <i class="fas fa-copy"></i>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+
+                    <!-- QR Code -->
+                    <div class="qr-section" id="qrSection" style="display: none;">
+                        <h4><i class="fas fa-qrcode"></i> QR Code</h4>
+                        <div id="qrCode"></div>
+                        <button id="downloadQR" class="btn-secondary">
+                            <i class="fas fa-download"></i> Download QR
+                        </button>
+                    </div>
+
+                    <!-- URL Stats -->
+                    <div class="url-stats" id="urlStats">
+                        <div class="stat-item">
+                            <i class="fas fa-mouse-pointer"></i>
+                            <span>Clicks: <strong id="clickCount">0</strong></span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-calendar"></i>
+                            <span>Created: <strong id="createdDate">-</strong></span>
+                        </div>
+                        <div class="stat-item" id="expiryStat" style="display: none;">
+                            <i class="fas fa-hourglass-end"></i>
+                            <span>Expires: <strong id="expiryDate">-</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="result-actions">
+                        <button id="shareBtn" class="btn-secondary">
+                            <i class="fas fa-share-alt"></i> Share
+                        </button>
+                        <button id="deleteBtn" class="btn-danger" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button id="shortenAnother" class="btn-secondary">
+                            <i class="fas fa-plus"></i> Shorten Another
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast & Reliable</h3>
+                <p>Lightning-fast URL shortening with 99.9% uptime</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Secure</h3>
+                <p>All URLs are validated and stored securely</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Track Performance</h3>
+                <p>Monitor clicks and engagement in real-time</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-qrcode"></i>
+                <h3>QR Codes</h3>
+                <p>Generate QR codes for your shortened URLs</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 MANISH MEHRA URL Shortener. Created for CodeAlpha Internship By MANISH MEHRA.</p>
+            <div class="footer-links">
+                <a href="https://github.com/Manishmehra95" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manish-mehra-0161043aa" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.instagram.com/m_manish__mehra?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" title="Instagram"><i class="fab fa-instagram"></i></a>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
