@@ -1,6 +1,6 @@
 const validUrl = require('valid-url');
 const { nanoid } = require('nanoid');
-const Url = require('../models/Url');
+const Url = require('../models/url');
 
 /**
  * URL Controller
