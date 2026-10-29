@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const dotenv = require('dotenv');
 const path = require('path');
+const compression = require('compression');
 
 // Load environment variables
 dotenv.config();
@@ -22,13 +23,23 @@ const app = express();
 connectDB();
 
 // Middleware
+app.use(compression()); // Gzip/Brotli compression for fast loading
 app.use(cors()); // Enable CORS for all routes
 app.use(morgan('dev')); // HTTP request logger
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the public directory with caching headers
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1d',
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        } else if (filePath.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff2|woff)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+        }
+    }
+}));
 
 // API Routes
 app.use('/api', urlRoutes);

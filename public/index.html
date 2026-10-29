@@ -3,39 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Create short, fast, and secure URLs for free with MM URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant redirects, and a simple user-friendly interface.">
-    <meta name="keywords" content="URL Shortener, Free URL Shortener, Best URL Shortener, Online URL Shortener, Link Shortener, Free Link Shortener, URL Shortener Online, Short URL, Short Link, URL Shortener Tool, Link Shortener Tool, URL Generator, Short Link Generator, Create Short URL, Generate Short URL, Tiny URL, TinyURL Alternative, Bitly Alternative, URL Redirect, Link Redirect, Custom URL Shortener, Custom Short Link, Branded Short Links, Secure URL Shortener, Fast URL Shortener, Instant URL Shortener, URL Compression, Link Management, Long URL to Short URL, Share Links, Easy URL Shortener, Free Short Links, QR Code URL, URL Sharing Tool, Smart URL Shortener, Web URL Shortener, Online Link Generator, HTTPS URL Shortener, Track Short Links, URL Analytics, MM URL Shortener, MM Shortener, mm-urlshortner, Manish Mehra URL Shortener URL Shortening Service, Free Link Generator, Shorten Long Links, Shorten Website URL, URL Converter, Custom Alias URL, Link Optimization, Shareable Links, Web Link Shortener, Professional URL Shortener, Modern URL Shortener, Free Tiny Links, URL Tools, Online Web Tools">
+    <meta name="theme-color" content="#667eea">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://mmurlshortner.qd.je/">
+
+    <!-- Primary Meta Tags -->
+    <title>Shortify | Free Fast URL Shortener &amp; QR Code Generator</title>
+    <meta name="title" content="Shortify | Free Fast URL Shortener &amp; QR Code Generator">
+    <meta name="description" content="Shortify is a free, lightning-fast, and secure URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant QR codes, and click tracking analytics.">
+    <meta name="keywords" content="Shortify, URL Shortener, Free URL Shortener, Best URL Shortener, Online Link Shortener, TinyURL Alternative, Bitly Alternative, Custom Short Links, QR Code URL Generator, Fast URL Shortener, Link Analytics">
     <meta name="author" content="Manish Mehra">
     <meta name="google-site-verification" content="googled5cd77b53033fa83">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="MM URL Shortener | Free URL Shortener &amp; Custom Short Links">
-    <meta property="og:description" content="Create short, fast, and secure URLs for free with MM URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant redirects, and a simple user-friendly interface.">
-    <meta property="og:image" content="favicon.png">
+    <meta property="og:url" content="https://mmurlshortner.qd.je/">
+    <meta property="og:title" content="Shortify | Free Fast URL Shortener &amp; QR Code Generator">
+    <meta property="og:description" content="Shortify is a free, lightning-fast, and secure URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant QR codes, and click tracking.">
+    <meta property="og:image" content="https://mmurlshortner.qd.je/favicon.png">
 
-    <!-- Twitter -->
+    <!-- Twitter Card -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="MM URL Shortener | Free URL Shortener &amp; Custom Short Links">
-    <meta property="twitter:description" content="Create short, fast, and secure URLs for free with MM URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant redirects, and a simple user-friendly interface.">
-    <meta property="twitter:image" content="favicon.png">
+    <meta property="twitter:url" content="https://mmurlshortner.qd.je/">
+    <meta property="twitter:title" content="Shortify | Free Fast URL Shortener &amp; QR Code Generator">
+    <meta property="twitter:description" content="Shortify is a free, lightning-fast, and secure URL Shortener. Convert long links into easy-to-share short URLs with custom aliases and QR codes.">
+    <meta property="twitter:image" content="https://mmurlshortner.qd.je/favicon.png">
+
+    <!-- Schema.org JSON-LD Structured Data for Search Console & Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Shortify",
+      "url": "https://mmurlshortner.qd.je/",
+      "description": "Shortify is a fast, free, and secure link shortener with custom alias and QR code generator.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="shortcut icon" href="favicon.ico">
 
-    <title>MM URL Shortener | Free URL Shortener &amp; Custom Short Links</title>
+    <!-- Preconnect to CDNs for speed -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4510422045053733"
-     crossorigin="anonymous"></script>
+    <!-- Asynchronous Font Awesome to eliminate render blocking -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Non-blocking Lazy Load for Google AdSense (Prevents CLS & Speed drops) -->
+    <script>
+        (function() {
+            var loaded = false;
+            function loadAdSense() {
+                if (loaded) return;
+                loaded = true;
+                var s = document.createElement('script');
+                s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4510422045053733";
+                s.async = true;
+                s.crossOrigin = "anonymous";
+                document.head.appendChild(s);
+            }
+            ['scroll', 'touchstart', 'mousemove', 'keydown', 'click'].forEach(function(ev) {
+                window.addEventListener(ev, loadAdSense, { once: true, passive: true });
+            });
+            setTimeout(loadAdSense, 3500);
+        })();
+    </script>
 </head>
 <body>
     <!-- Theme Toggle Button -->
@@ -49,7 +97,7 @@
         <header class="header">
             <div class="logo">
                 <i class="fas fa-link"></i>
-                <h1>URL Shortener By MANISH MEHRA</h1>
+                <h1>Shortify</h1>
             </div>
             <p class="subtitle">Transform your long URLs into short, manageable links</p>
         </header>
@@ -181,7 +229,8 @@
         </main>
 
         <!-- Features Section -->
-        <section class="features">
+        <section class="features" aria-label="Features">
+            <h2 class="features-title">Why Choose Shortify?</h2>
             <div class="feature-card">
                 <i class="fas fa-bolt"></i>
                 <h3>Fast & Reliable</h3>
@@ -206,11 +255,11 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; 2026 MANISH MEHRA URL Shortener. Created for CodeAlpha Internship By MANISH MEHRA.</p>
+            <p>&copy; 2026 Shortify. Created for CodeAlpha Internship By MANISH MEHRA.</p>
             <div class="footer-links">
-                <a href="https://github.com/Manishmehra95" title="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://www.linkedin.com/in/manish-mehra-0161043aa" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="https://www.instagram.com/m_manish__mehra?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://github.com/Manishmehra95" aria-label="GitHub Profile" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/manish-mehra-0161043aa" aria-label="LinkedIn Profile" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                <a href="https://www.instagram.com/m_manish__mehra?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" aria-label="Instagram Profile" title="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
             </div>
         </footer>
     </div>
@@ -218,10 +267,10 @@
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- QR Code Library -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <!-- QR Code Library (Deferred) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     
-    <!-- Custom JavaScript -->
-    <script src="script.js"></script>
+    <!-- Custom JavaScript (Deferred) -->
+    <script defer src="script.js"></script>
 </body>
 </html>

@@ -50,8 +50,10 @@ function initializeApp() {
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
     
-    // Focus on input
-    urlInput.focus();
+    // Focus on input only on desktop to avoid mobile keyboard jump / layout shift
+    if (window.innerWidth > 768 && urlInput) {
+        urlInput.focus();
+    }
 }
 
 // ==================== Theme Toggle ====================

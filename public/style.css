@@ -155,17 +155,15 @@ body::before {
 .header {
     text-align: center;
     margin-bottom: var(--spacing-2xl);
-    animation: fadeInDown 1s ease;
+    animation: fadeInDown 0.4s ease-out;
 }
 
 @keyframes fadeInDown {
     from {
         opacity: 0;
-        transform: translateY(-30px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 
@@ -204,22 +202,21 @@ body::before {
 .card {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-backdrop);
+    -webkit-backdrop-filter: var(--glass-backdrop);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: var(--spacing-2xl);
     box-shadow: var(--glass-shadow);
     margin-bottom: var(--spacing-2xl);
-    animation: fadeInUp 1s ease;
+    animation: fadeInUp 0.4s ease-out;
 }
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 
@@ -575,6 +572,17 @@ body::before {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-xl);
     margin-bottom: var(--spacing-2xl);
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 300px;
+}
+
+.features-title {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-sm);
 }
 
 .feature-card {
@@ -699,6 +707,11 @@ body::before {
 
 /* ==================== Responsive Design ==================== */
 @media (max-width: 768px) {
+    body::before {
+        animation: none;
+        opacity: 0.6;
+    }
+
     .container {
         padding: var(--spacing-md);
     }
@@ -713,6 +726,15 @@ body::before {
     
     .card {
         padding: var(--spacing-lg);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: var(--bg-card);
+    }
+
+    .feature-card {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: var(--bg-card);
     }
     
     .input-group {
@@ -743,8 +765,18 @@ body::before {
     .theme-toggle {
         top: var(--spacing-md);
         right: var(--spacing-md);
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .footer-links a {
+        min-width: 44px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
@@ -759,9 +791,20 @@ body::before {
     
     #urlInput {
         font-size: 0.9rem;
+        min-height: 44px;
     }
     
     .btn-primary {
         width: 100%;
+        min-height: 46px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }

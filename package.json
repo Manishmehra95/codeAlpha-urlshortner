@@ -17,6 +17,7 @@
   "author": "CodeAlpha Intern",
   "license": "MIT",
   "dependencies": {
+    "compression": "^1.8.2",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^4.22.2",
