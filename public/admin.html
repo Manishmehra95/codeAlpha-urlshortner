@@ -305,6 +305,7 @@
         let allUrls = [];
         let remainingSeconds = 60;
         let timerInterval = null;
+        let currentAdminKey = null; // Stored only in-memory: Page refresh / reload wipes this instantly!
 
         // Auto-logout security timer functions
         function startAutoLogoutTimer() {
@@ -323,7 +324,7 @@
         }
 
         function resetActivityTimer() {
-            if (sessionStorage.getItem('shortify_admin_key')) {
+            if (currentAdminKey) {
                 remainingSeconds = 60;
                 updateTimerDisplay();
             }
@@ -341,8 +342,9 @@
 
         function forceLogout(message = 'Logged out successfully.') {
             clearInterval(timerInterval);
-            sessionStorage.removeItem('shortify_admin_key');
-            sessionStorage.removeItem('shortify_admin_expires');
+            currentAdminKey = null;
+            sessionStorage.clear();
+            localStorage.removeItem('shortify_admin_key');
             allUrls = [];
 
             // Wipe DOM to prevent data leaks
@@ -362,16 +364,16 @@
             passwordInput.focus();
         }
 
-        // Check stored auth on initial load
-        const savedKey = sessionStorage.getItem('shortify_admin_key');
-        const expiresAt = sessionStorage.getItem('shortify_admin_expires');
+        // Always lock and force login on page load / refresh
+        sessionStorage.clear();
+        currentAdminKey = null;
+        forceLogout('Please enter admin password to continue.');
 
-        if (savedKey && expiresAt && Date.now() < Number(expiresAt)) {
-            fetchStats(savedKey);
-            startAutoLogoutTimer();
-        } else {
-            forceLogout('Please enter admin password to continue.');
-        }
+        // Wipe session on beforeunload / page refresh
+        window.addEventListener('beforeunload', () => {
+            currentAdminKey = null;
+            sessionStorage.clear();
+        });
 
         // Login Handler with strict verification
         loginBtn.addEventListener('click', handleLogin);
@@ -396,11 +398,10 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    sessionStorage.setItem('shortify_admin_key', pwd);
-                    sessionStorage.setItem('shortify_admin_expires', Date.now() + 60 * 1000);
+                    currentAdminKey = pwd;
                     loginError.style.display = 'none';
                     passwordInput.value = '';
-                    await fetchStats(pwd);
+                    await fetchStats(currentAdminKey);
                     startAutoLogoutTimer();
                 } else {
                     loginError.textContent = 'Galat Password! Sahi password ke bina panel open nahi hoga.';
@@ -492,10 +493,15 @@
         }
 
         saveSeoBtn.addEventListener('click', async () => {
-            const key = sessionStorage.getItem('shortify_admin_key');
+            const key = currentAdminKey;
             const title = seoTitleInput.value.trim();
             const description = seoDescInput.value.trim();
             const keywords = seoKeywordsInput.value.trim();
+
+            if (!key) {
+                forceLogout('Session expired. Please log in again.');
+                return;
+            }
 
             if (!title) {
                 alert('Title tag cannot be empty!');
@@ -578,7 +584,11 @@
         // Delete Link
         async function deleteLink(shortCode) {
             if (!confirm(`Are you sure you want to delete short code "${shortCode}"?`)) return;
-            const key = sessionStorage.getItem('shortify_admin_key');
+            const key = currentAdminKey;
+            if (!key) {
+                forceLogout('Session expired. Please log in again.');
+                return;
+            }
             try {
                 const res = await fetch(`/api/admin/url/${shortCode}`, {
                     method: 'DELETE',
@@ -599,13 +609,11 @@
 
         // Refresh & Logout
         refreshBtn.addEventListener('click', () => {
-            const key = sessionStorage.getItem('shortify_admin_key');
-            if (key) fetchStats(key);
+            if (currentAdminKey) fetchStats(currentAdminKey);
         });
 
         logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('shortify_admin_key');
-            location.reload();
+            forceLogout('Logged out successfully.');
         });
 
         // Theme Toggle
