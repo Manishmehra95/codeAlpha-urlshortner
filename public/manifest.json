@@ -1,0 +1,25 @@
+{
+  "name": "Shortify Admin Dashboard",
+  "short_name": "Shortify Admin",
+  "description": "Shortify Admin Panel to manage links, track visitors, and update live SEO on the go.",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#667EEA",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png?v=3",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg?v=3",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

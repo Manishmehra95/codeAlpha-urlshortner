@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shortify Admin Dashboard</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
     <link rel="icon" type="image/png" sizes="256x256" href="favicon.png?v=3">
     <link rel="shortcut icon" href="favicon.ico?v=3">
@@ -118,6 +123,7 @@
                 <h1>Shortify Admin</h1>
             </a>
             <div class="header-actions">
+                <button id="installAppBtn" class="btn btn-primary" style="display:none;" title="Install on Android Phone"><i class="fas fa-mobile-alt"></i> Install App</button>
                 <span id="sessionTimerBadge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; padding:0.35rem 0.75rem; border-radius:8px; font-size:0.8rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem;" title="1-minute auto-logout security">
                     <i class="fas fa-stopwatch"></i> Auto-logout: <span id="timerCountdown">60s</span>
                 </span>
@@ -623,6 +629,36 @@
             document.documentElement.setAttribute('data-theme', target);
             themeBtn.innerHTML = target === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
+
+        // Progressive Web App (PWA) Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('installAppBtn');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        const installAppBtn = document.getElementById('installAppBtn');
+        if (installAppBtn) {
+            installAppBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        installAppBtn.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+        }
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW reg error:', err));
+            });
+        }
     </script>
 </body>
 </html>
