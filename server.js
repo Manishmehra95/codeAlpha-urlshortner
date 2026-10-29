@@ -46,7 +46,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
 }));
 
-// Dedicated routes for robots, sitemap, and Agentic Browsing (llms.txt)
+// Dedicated routes for robots, sitemap, manifest, sw, and Agentic Browsing (llms.txt)
 app.get(['/llms.txt', '/.well-known/llms.txt'], (req, res) => {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.sendFile(path.join(__dirname, 'public', 'llms.txt'));
@@ -60,6 +60,16 @@ app.get('/robots.txt', (req, res) => {
 app.get('/sitemap.xml', (req, res) => {
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
+});
+
+app.get('/manifest.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', 'manifest.json'));
+});
+
+app.get('/sw.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', 'sw.js'));
 });
 
 // Track website visitors and serve dynamic SEO tags if configured
