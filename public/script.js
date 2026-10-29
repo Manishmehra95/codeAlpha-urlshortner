@@ -172,7 +172,7 @@ function displayResult(data) {
     }
     
     // Generate QR Code
-    generateQRCode(data.shortUrl);
+    generateQRCode(data.shortUrl, data.qrCode);
     
     // Show delete button
     deleteBtn.style.display = 'flex';
@@ -182,49 +182,60 @@ function displayResult(data) {
 }
 
 // ==================== QR Code Generation ====================
-function generateQRCode(url) {
+function generateQRCode(url, qrDataUrl) {
     // Clear previous QR code
     qrCode.innerHTML = '';
     
     // Show QR section
     qrSection.style.display = 'block';
     
-    const render = () => {
-        currentQRCode = new QRCode(qrCode, {
-            text: url,
-            width: 150,
-            height: 150,
-            colorDark: '#2d3748',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    };
-
-    if (typeof QRCode === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
-        script.onload = render;
-        document.body.appendChild(script);
-    } else {
-        render();
-    }
+    const imgSrc = qrDataUrl || `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(url)}`;
+    
+    const img = document.createElement('img');
+    img.src = imgSrc;
+    img.alt = 'QR Code';
+    img.width = 150;
+    img.height = 150;
+    img.style.borderRadius = '8px';
+    img.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+    img.id = 'qrImage';
+    qrCode.appendChild(img);
 }
 
 // ==================== Download QR Code ====================
-function handleDownloadQR() {
+async function handleDownloadQR() {
+    const img = qrCode.querySelector('img');
     const canvas = qrCode.querySelector('canvas');
-    if (!canvas) {
+    const qrSrc = img ? img.src : (canvas ? canvas.toDataURL('image/png') : null);
+    
+    if (!qrSrc) {
         showToast('QR code not found', 'error');
         return;
     }
     
-    // Convert canvas to image and download
-    const link = document.createElement('a');
-    link.download = `qr-code-${currentShortCode}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    
-    showToast('QR code downloaded!', 'success');
+    try {
+        const link = document.createElement('a');
+        link.download = `qr-code-${currentShortCode || 'link'}.png`;
+        
+        if (qrSrc.startsWith('data:')) {
+            link.href = qrSrc;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            const res = await fetch(qrSrc);
+            const blob = await res.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            link.href = blobUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+        }
+        showToast('QR code downloaded!', 'success');
+    } catch (err) {
+        window.open(qrSrc, '_blank');
+    }
 }
 
 // ==================== Copy to Clipboard ====================

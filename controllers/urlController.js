@@ -1,5 +1,6 @@
 const validUrl = require('valid-url');
 const { nanoid } = require('nanoid');
+const QRCode = require('qrcode');
 const Url = require('../models/url');
 
 /**
@@ -33,11 +34,20 @@ const shortenUrl = async (req, res) => {
         // Check if URL already exists in database
         const existingUrl = await Url.findOne({ originalUrl });
         if (existingUrl) {
+            const shortUrl = existingUrl.getShortUrl();
+            let qrCode = null;
+            try {
+                qrCode = await QRCode.toDataURL(shortUrl);
+            } catch (qrErr) {
+                console.error('Error generating QR code:', qrErr);
+            }
+
             return res.status(200).json({
                 success: true,
                 data: {
                     originalUrl: existingUrl.originalUrl,
-                    shortUrl: existingUrl.getShortUrl(),
+                    shortUrl: shortUrl,
+                    qrCode: qrCode,
                     shortCode: existingUrl.shortCode,
                     clicks: existingUrl.clicks,
                     createdAt: existingUrl.createdAt,
@@ -104,12 +114,21 @@ const url = new Url(urlData);
 // Save to database
 await url.save();
 
+        const shortUrl = url.getShortUrl();
+        let qrCode = null;
+        try {
+            qrCode = await QRCode.toDataURL(shortUrl);
+        } catch (qrErr) {
+            console.error('Error generating QR code:', qrErr);
+        }
+
         // Return success response
         res.status(201).json({
             success: true,
             data: {
                 originalUrl: url.originalUrl,
-                shortUrl: url.getShortUrl(),
+                shortUrl: shortUrl,
+                qrCode: qrCode,
                 shortCode: url.shortCode,
                 clicks: url.clicks,
                 createdAt: url.createdAt,
