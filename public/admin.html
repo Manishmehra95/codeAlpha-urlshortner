@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shortify Admin Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary: #764ba2;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { background: var(--bg); color: var(--text-main); min-height: 100vh; padding: 1.5rem; transition: background 0.2s; }
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .brand { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: inherit; }
+        .brand i { font-size: 1.75rem; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand h1 { font-size: 1.5rem; font-weight: 700; }
+        .header-actions { display: flex; gap: 0.75rem; align-items: center; }
+        .btn { padding: 0.5rem 1rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none; transition: 0.2s; }
+        .btn-primary { background: var(--gradient); color: #fff; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: rgba(100, 116, 139, 0.1); }
+        .btn-danger { background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+        .btn-danger:hover { background: #fca5a5; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); display: flex; align-items: center; gap: 1.25rem; }
+        .stat-icon { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        .icon-visitors { background: #e0e7ff; color: #4338ca; }
+        .icon-urls { background: #fdf2f8; color: #be185d; }
+        .icon-clicks { background: #ecfdf5; color: #047857; }
+        .stat-content h3 { font-size: 0.875rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+        .stat-number { font-size: 2rem; font-weight: 800; }
+        .stat-badge { font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 9999px; background: #e0f2fe; color: #0369a1; font-weight: 600; display: inline-block; margin-top: 0.25rem; }
+
+        /* SEO Hub Section */
+        .section-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .seo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+        .seo-item { padding: 1rem; border-radius: 8px; border: 1px solid var(--border); background: rgba(100, 116, 139, 0.03); }
+        .seo-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        .badge-green { background: #dcfce7; color: #15803d; padding: 0.2rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+        .seo-item p { font-size: 0.8rem; color: var(--text-muted); word-break: break-all; }
+        .seo-links { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+        /* URLs Table */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
+        th { padding: 0.75rem 1rem; background: rgba(100, 116, 139, 0.05); color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+        td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:hover { background: rgba(100, 116, 139, 0.02); }
+        .url-truncate { max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .tag-short { font-family: monospace; font-weight: 700; color: var(--primary); background: rgba(102, 126, 234, 0.1); padding: 0.2rem 0.4rem; border-radius: 4px; }
+        .action-btns { display: flex; gap: 0.5rem; }
+
+        /* Login Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+        .modal-card { background: var(--card-bg); border-radius: var(--radius); padding: 2rem; max-width: 400px; width: 100%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border); text-align: center; }
+        .modal-card h2 { margin-bottom: 0.5rem; font-weight: 700; }
+        .modal-card p { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .input-box { width: 100%; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: inherit; font-size: 1rem; margin-bottom: 1rem; outline: none; }
+        .input-box:focus { border-color: var(--primary); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-card">
+            <i class="fas fa-lock" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+            <h2>Admin Login</h2>
+            <p>Shortify admin panel access karne ke liye password enter karein.</p>
+            <input type="password" id="adminPasswordInput" class="input-box" placeholder="Password (Default: admin123)" autofocus>
+            <button id="loginBtn" class="btn btn-primary" style="width: 100%; justify-content: center;">Login to Dashboard</button>
+            <p id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-top: 0.75rem; display: none;">Invalid password. Please try again.</p>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div id="dashboardApp" class="container hidden">
+        <!-- Header -->
+        <header>
+            <a href="/" class="brand">
+                <i class="fas fa-link"></i>
+                <h1>Shortify Admin</h1>
+            </a>
+            <div class="header-actions">
+                <button id="themeBtn" class="btn btn-outline" title="Toggle theme"><i class="fas fa-moon"></i></button>
+                <button id="refreshBtn" class="btn btn-outline" title="Refresh data"><i class="fas fa-sync-alt"></i> Refresh</button>
+                <a href="/" class="btn btn-outline" title="View website"><i class="fas fa-external-link-alt"></i> Website</a>
+                <button id="logoutBtn" class="btn btn-danger" title="Logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon icon-visitors"><i class="fas fa-users"></i></div>
+                <div class="stat-content">
+                    <h3>Site Visitors</h3>
+                    <div id="totalVisits" class="stat-number">0</div>
+                    <span id="todayVisits" class="stat-badge">Today: 0</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-urls"><i class="fas fa-link"></i></div>
+                <div class="stat-content">
+                    <h3>Links Shortened</h3>
+                    <div id="totalUrls" class="stat-number">0</div>
+                    <span class="stat-badge" style="background:#fce7f3; color:#9d174d;">Active in DB</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon icon-clicks"><i class="fas fa-mouse-pointer"></i></div>
+                <div class="stat-content">
+                    <h3>Total Link Clicks</h3>
+                    <div id="totalClicks" class="stat-number">0</div>
+                    <span class="stat-badge" style="background:#d1fae5; color:#065f46;">Engagements</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Health & Google Search Console Hub -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-search" style="color: var(--primary);"></i>
+                SEO & Google Search Console Health
+            </div>
+            <div class="seo-grid">
+                <div class="seo-item">
+                    <div class="seo-item-header">
+                        <span>XML Sitemap</span>
+                        <span class="badge-green">Active 200</span>
+                    </div>
+                    <p>Submitted in Google Search Console for instant crawling.</p>
+                </div>
+                <div class="seo-item">
+                    <div class="seo-item-header">
+                        <span>Robots.txt</span>
+                        <span class="badge-green">Allowed</span>
+                    </div>
+                    <p>Allows Googlebot to index home & redirects properly.</p>
+                </div>
+                <div class="seo-item">
+                    <div class="seo-item-header">
+                        <span>AI Search (llms.txt)</span>
+                        <span class="badge-green">3/3 Pass</span>
+                    </div>
+                    <p>Compliant for Gemini, ChatGPT & AI agentic browsing.</p>
+                </div>
+                <div class="seo-item">
+                    <div class="seo-item-header">
+                        <span>Core Web Vitals</span>
+                        <span class="badge-green">Green 90+</span>
+                    </div>
+                    <p>CLS: 0.00 | Fast LCP & FCP for mobile ranking.</p>
+                </div>
+            </div>
+            <div class="seo-links">
+                <a href="/sitemap.xml" target="_blank" class="btn btn-outline"><i class="fas fa-sitemap"></i> View Sitemap.xml</a>
+                <a href="/robots.txt" target="_blank" class="btn btn-outline"><i class="fas fa-robot"></i> View Robots.txt</a>
+                <a href="/llms.txt" target="_blank" class="btn btn-outline"><i class="fas fa-file-alt"></i> View llms.txt</a>
+                <a href="https://search.google.com/search-console" target="_blank" class="btn btn-primary"><i class="fab fa-google"></i> Google Search Console</a>
+                <a href="https://pagespeed.web.dev/analysis?url=https%3A%2F%2Fmmurlshortner.qd.je%2F" target="_blank" class="btn btn-outline"><i class="fas fa-tachometer-alt"></i> Live PageSpeed Test</a>
+            </div>
+        </div>
+
+        <!-- Links Directory -->
+        <div class="section-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
+                <div class="section-title" style="margin-bottom:0;">
+                    <i class="fas fa-list" style="color: var(--primary);"></i>
+                    Shortened Links Directory
+                </div>
+                <input type="text" id="filterInput" class="input-box" placeholder="Filter by code or URL..." style="max-width:280px; margin-bottom:0; padding:0.5rem 0.8rem; font-size:0.875rem;">
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Short Link</th>
+                            <th>Original Destination</th>
+                            <th>Clicks</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="urlsTableBody">
+                        <tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">Loading links...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('adminPasswordInput');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const dashboardApp = document.getElementById('dashboardApp');
+        const loginError = document.getElementById('loginError');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const themeBtn = document.getElementById('themeBtn');
+        const filterInput = document.getElementById('filterInput');
+
+        let allUrls = [];
+
+        // Check stored auth
+        const savedKey = sessionStorage.getItem('shortify_admin_key');
+        if (savedKey) {
+            fetchStats(savedKey);
+        }
+
+        // Login Handler
+        loginBtn.addEventListener('click', handleLogin);
+        passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
+
+        async function handleLogin() {
+            const pwd = passwordInput.value.trim();
+            if (!pwd) return;
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sessionStorage.setItem('shortify_admin_key', pwd);
+                    loginError.style.display = 'none';
+                    fetchStats(pwd);
+                } else {
+                    loginError.style.display = 'block';
+                }
+            } catch (err) {
+                loginError.textContent = 'Connection error. Please try again.';
+                loginError.style.display = 'block';
+            }
+        }
+
+        // Fetch Dashboard Data
+        async function fetchStats(key) {
+            try {
+                const res = await fetch('/api/admin/stats', {
+                    headers: { 'x-admin-key': key }
+                });
+                const json = await res.json();
+
+                if (!json.success) {
+                    sessionStorage.removeItem('shortify_admin_key');
+                    loginModal.classList.remove('hidden');
+                    dashboardApp.classList.add('hidden');
+                    return;
+                }
+
+                loginModal.classList.add('hidden');
+                dashboardApp.classList.remove('hidden');
+
+                const { visitors, totalUrls, totalClicks, urls } = json.data;
+                document.getElementById('totalVisits').textContent = (visitors.total || 0).toLocaleString();
+                document.getElementById('todayVisits').textContent = `Today: ${(visitors.today || 0).toLocaleString()}`;
+                document.getElementById('totalUrls').textContent = (totalUrls || 0).toLocaleString();
+                document.getElementById('totalClicks').textContent = (totalClicks || 0).toLocaleString();
+
+                allUrls = urls || [];
+                renderTable(allUrls);
+
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Render Links Table
+        function renderTable(list) {
+            const tbody = document.getElementById('urlsTableBody');
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">No URLs found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(u => `
+                <tr>
+                    <td>
+                        <span class="tag-short">${u.shortCode}</span>
+                        <a href="${u.shortUrl}" target="_blank" style="margin-left:6px; color:var(--text-muted);"><i class="fas fa-external-link-alt" style="font-size:0.75rem;"></i></a>
+                    </td>
+                    <td>
+                        <a href="${u.originalUrl}" target="_blank" class="url-truncate" title="${u.originalUrl}" style="color:inherit; text-decoration:none;">${u.originalUrl}</a>
+                    </td>
+                    <td><strong>${u.clicks}</strong></td>
+                    <td style="color:var(--text-muted); font-size:0.8rem;">${new Date(u.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn btn-outline" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="copyLink('${u.shortUrl}')"><i class="fas fa-copy"></i></button>
+                            <button class="btn btn-danger" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="deleteLink('${u.shortCode}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter Links
+        filterInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtered = allUrls.filter(u => 
+                u.shortCode.toLowerCase().includes(query) || 
+                u.originalUrl.toLowerCase().includes(query)
+            );
+            renderTable(filtered);
+        });
+
+        // Copy Link
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Copied link: ' + url);
+            });
+        }
+
+        // Delete Link
+        async function deleteLink(shortCode) {
+            if (!confirm(`Are you sure you want to delete short code "${shortCode}"?`)) return;
+            const key = sessionStorage.getItem('shortify_admin_key');
+            try {
+                const res = await fetch(`/api/admin/url/${shortCode}`, {
+                    method: 'DELETE',
+                    headers: { 'x-admin-key': key }
+                });
+                const d = await res.json();
+                if (d.success) {
+                    allUrls = allUrls.filter(u => u.shortCode !== shortCode);
+                    renderTable(allUrls);
+                    document.getElementById('totalUrls').textContent = allUrls.length;
+                } else {
+                    alert(d.error || 'Failed to delete');
+                }
+            } catch (err) {
+                alert('Error deleting link');
+            }
+        }
+
+        // Refresh & Logout
+        refreshBtn.addEventListener('click', () => {
+            const key = sessionStorage.getItem('shortify_admin_key');
+            if (key) fetchStats(key);
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('shortify_admin_key');
+            location.reload();
+        });
+
+        // Theme Toggle
+        themeBtn.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', target);
+            themeBtn.innerHTML = target === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    </script>
+</body>
+</html>

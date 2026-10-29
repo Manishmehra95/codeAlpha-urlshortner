@@ -15,6 +15,8 @@ const connectDB = require('./config/db');
 
 // Import routes
 const urlRoutes = require('./routes/urlRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const SiteStats = require('./models/siteStats');
 
 // Initialize Express app
 const app = express();
@@ -58,7 +60,19 @@ app.get('/sitemap.xml', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
 });
 
+// Track website visitors on root hit
+app.get('/', (req, res, next) => {
+    SiteStats.recordVisit().catch(err => console.error('Visit track error:', err));
+    next();
+});
+
+// Admin Panel Web Route
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 // API Routes
+app.use('/api/admin', adminRoutes);
 app.use('/api', urlRoutes);
 
 // Redirect route for short URLs
