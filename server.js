@@ -29,13 +29,14 @@ app.use(morgan('dev')); // HTTP request logger
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Serve static files from the public directory with caching headers
+// Serve static files from the public directory with smart caching headers
 app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: '1d',
+    maxAge: 0,
     setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.html')) {
-            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
-        } else if (filePath.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff2|woff)$/)) {
+        if (filePath.endsWith('.html') || filePath.match(/\.(css|js)$/)) {
+            // HTML, JS, and CSS always revalidate so updates are instant
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg|woff2|woff)$/)) {
             res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
         }
     }

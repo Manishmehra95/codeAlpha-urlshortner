@@ -63,9 +63,9 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
-    <!-- Preload Critical CSS -->
-    <link rel="preload" href="style.css" as="style">
-    <link rel="stylesheet" href="style.css">
+    <!-- Preload Critical CSS with cache-busting -->
+    <link rel="preload" href="style.css?v=2.1" as="style">
+    <link rel="stylesheet" href="style.css?v=2.1">
 
     <!-- Non-blocking Lazy Load for Google AdSense (Prevents CLS & Speed drops) -->
     <script>
@@ -274,7 +274,7 @@
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Custom JavaScript (Deferred) -->
-    <script defer src="script.js"></script>
+    <!-- Custom JavaScript (Deferred with cache-busting) -->
+    <script defer src="script.js?v=2.1"></script>
 </body>
 </html>
