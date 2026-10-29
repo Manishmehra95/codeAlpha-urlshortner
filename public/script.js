@@ -189,15 +189,25 @@ function generateQRCode(url) {
     // Show QR section
     qrSection.style.display = 'block';
     
-    // Generate new QR code
-    currentQRCode = new QRCode(qrCode, {
-        text: url,
-        width: 150,
-        height: 150,
-        colorDark: '#2d3748',
-        colorLight: '#ffffff',
-        correctLevel: QRCode.CorrectLevel.H
-    });
+    const render = () => {
+        currentQRCode = new QRCode(qrCode, {
+            text: url,
+            width: 150,
+            height: 150,
+            colorDark: '#2d3748',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    };
+
+    if (typeof QRCode === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+        script.onload = render;
+        document.body.appendChild(script);
+    } else {
+        render();
+    }
 }
 
 // ==================== Download QR Code ====================

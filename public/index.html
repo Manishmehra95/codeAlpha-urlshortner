@@ -62,7 +62,8 @@
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
-    <!-- Custom CSS -->
+    <!-- Preload Critical CSS -->
+    <link rel="preload" href="style.css" as="style">
     <link rel="stylesheet" href="style.css">
 
     <!-- Non-blocking Lazy Load for Google AdSense (Prevents CLS & Speed drops) -->
@@ -81,13 +82,13 @@
             ['scroll', 'touchstart', 'mousemove', 'keydown', 'click'].forEach(function(ev) {
                 window.addEventListener(ev, loadAdSense, { once: true, passive: true });
             });
-            setTimeout(loadAdSense, 3500);
+            setTimeout(loadAdSense, 7000);
         })();
     </script>
 </head>
 <body>
     <!-- Theme Toggle Button -->
-    <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
         <i class="fas fa-moon"></i>
     </button>
 
@@ -105,19 +106,21 @@
         <!-- Main Card -->
         <main class="card glassmorphism">
             <!-- URL Input Section -->
-            <div class="input-section">
+            <form id="shortenForm" class="input-section" onsubmit="event.preventDefault();">
                 <div class="input-group">
                     <div class="input-wrapper">
                         <i class="fas fa-link input-icon"></i>
                         <input 
                             type="url" 
                             id="urlInput" 
+                            name="url"
                             placeholder="Enter your long URL here..." 
                             autocomplete="off"
                             aria-label="URL to shorten"
+                            required
                         >
                     </div>
-                    <button id="shortenBtn" class="btn-primary">
+                    <button id="shortenBtn" type="submit" class="btn-primary" aria-label="Shorten URL">
                         <span class="btn-text">Shorten URL</span>
                         <span class="btn-loader" style="display: none;">
                             <i class="fas fa-spinner fa-spin"></i>
@@ -135,6 +138,7 @@
                             <input 
                                 type="text" 
                                 id="customAlias" 
+                                name="customAlias"
                                 placeholder="e.g., my-link" 
                                 maxlength="20"
                                 pattern="[a-zA-Z0-9_-]{4,20}"
@@ -147,6 +151,7 @@
                             <input 
                                 type="number" 
                                 id="expiresIn" 
+                                name="expiresIn"
                                 placeholder="Leave empty for no expiry" 
                                 min="1" 
                                 max="365"
@@ -156,10 +161,10 @@
                 </div>
 
                 <!-- Toggle Advanced Options -->
-                <button class="btn-advanced" id="toggleAdvanced">
+                <button type="button" class="btn-advanced" id="toggleAdvanced" aria-expanded="false" aria-controls="advancedOptions">
                     <i class="fas fa-cog"></i> Advanced Options
                 </button>
-            </div>
+            </form>
 
             <!-- Result Section -->
             <div class="result-section" id="resultSection" style="display: none;">
@@ -173,7 +178,7 @@
                         <div class="url-display">
                             <a id="shortUrl" href="#" target="_blank" rel="noopener noreferrer"></a>
                         </div>
-                        <button id="copyBtn" class="btn-copy" title="Copy to clipboard">
+                        <button id="copyBtn" class="btn-copy" aria-label="Copy short URL" title="Copy to clipboard">
                             <i class="fas fa-copy"></i>
                             <span>Copy</span>
                         </button>
@@ -183,7 +188,7 @@
                     <div class="qr-section" id="qrSection" style="display: none;">
                         <h4><i class="fas fa-qrcode"></i> QR Code</h4>
                         <div id="qrCode"></div>
-                        <button id="downloadQR" class="btn-secondary">
+                        <button id="downloadQR" class="btn-secondary" aria-label="Download QR Code">
                             <i class="fas fa-download"></i> Download QR
                         </button>
                     </div>
@@ -206,13 +211,13 @@
 
                     <!-- Action Buttons -->
                     <div class="result-actions">
-                        <button id="shareBtn" class="btn-secondary">
+                        <button id="shareBtn" class="btn-secondary" aria-label="Share short URL">
                             <i class="fas fa-share-alt"></i> Share
                         </button>
-                        <button id="deleteBtn" class="btn-danger" style="display: none;">
+                        <button id="deleteBtn" class="btn-danger" aria-label="Delete short URL" style="display: none;">
                             <i class="fas fa-trash"></i> Delete
                         </button>
-                        <button id="shortenAnother" class="btn-secondary">
+                        <button id="shortenAnother" class="btn-secondary" aria-label="Shorten Another URL">
                             <i class="fas fa-plus"></i> Shorten Another
                         </button>
                     </div>
@@ -267,9 +272,6 @@
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toastContainer"></div>
 
-    <!-- QR Code Library (Deferred) -->
-    <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    
     <!-- Custom JavaScript (Deferred) -->
     <script defer src="script.js"></script>
 </body>

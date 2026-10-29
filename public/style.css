@@ -14,10 +14,10 @@
     --bg-card: rgba(255, 255, 255, 0.95);
     --bg-input: #f8f9fa;
     
-    /* Text Colors */
-    --text-primary: #2d3748;
-    --text-secondary: #718096;
-    --text-light: #a0aec0;
+    /* Text Colors - High Contrast for Accessibility */
+    --text-primary: #1a202c;
+    --text-secondary: #4a5568;
+    --text-light: #718096;
     --text-white: #ffffff;
     
     /* Border & Shadow */
