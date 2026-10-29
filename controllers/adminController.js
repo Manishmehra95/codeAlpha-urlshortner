@@ -4,8 +4,8 @@ const SeoConfig = require('../models/seoConfig');
 const fs = require('fs');
 const path = require('path');
 
-// Default admin password (can be overridden in .env with ADMIN_PASSWORD)
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+// Admin password (defaults to Manishmehrashortify@2007)
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Manishmehrashortify@2007';
 
 /**
  * Admin Login Verification
