@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://mmurlshortner.qd.je/sitemap.xml
+Sitemap: https://shortifyurlshortner.vercel.app/sitemap.xml

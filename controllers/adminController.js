@@ -57,7 +57,7 @@ const getStats = async (req, res) => {
             id: u._id,
             originalUrl: u.originalUrl,
             shortCode: u.shortCode,
-            shortUrl: `${process.env.BASE_URL || 'https://mmurlshortner.qd.je'}/${u.shortCode}`,
+            shortUrl: `${process.env.BASE_URL || 'https://shortifyurlshortner.vercel.app'}/${u.shortCode}`,
             clicks: u.clicks || 0,
             createdAt: u.createdAt,
             expiresAt: u.expiresAt,
@@ -65,7 +65,7 @@ const getStats = async (req, res) => {
         }));
 
         // 5. SEO Health Overview
-        const baseUrl = process.env.BASE_URL || 'https://mmurlshortner.qd.je';
+        const baseUrl = process.env.BASE_URL || 'https://shortifyurlshortner.vercel.app';
         const seoHealth = {
             sitemapUrl: `${baseUrl}/sitemap.xml`,
             robotsUrl: `${baseUrl}/robots.txt`,

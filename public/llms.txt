@@ -30,6 +30,6 @@ Shortify enables users and AI agents to transform long URLs into clean, manageab
 - `GET /:shortCode`: Redirect to the original destination URL.
 
 ## Website Links
-- [Shortify Homepage](https://mmurlshortner.qd.je/): Main application interface.
-- [Robots Configuration](https://mmurlshortner.qd.je/robots.txt): Search crawler directives.
-- [Sitemap](https://mmurlshortner.qd.je/sitemap.xml): XML sitemap for search engines.
+- [Shortify Homepage](https://shortifyurlshortner.vercel.app/): Main application interface.
+- [Robots Configuration](https://shortifyurlshortner.vercel.app/robots.txt): Search crawler directives.
+- [Sitemap](https://shortifyurlshortner.vercel.app/sitemap.xml): XML sitemap for search engines.

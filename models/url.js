@@ -55,7 +55,8 @@ urlSchema.pre('save', function(next) {
 
 // Instance method to get full short URL
 urlSchema.methods.getShortUrl = function() {
-    return `${process.env.BASE_URL}/${this.shortCode}`;
+    const base = (process.env.BASE_URL || 'https://shortifyurlshortner.vercel.app').replace(/\/$/, '');
+    return `${base}/${this.shortCode}`;
 };
 
 // Static method to find by short code
