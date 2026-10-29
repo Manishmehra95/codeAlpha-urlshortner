@@ -1,0 +1,35 @@
+# Shortify
+
+> Shortify is a fast, free, secure, and modern URL Shortener web application.
+
+Shortify enables users and AI agents to transform long URLs into clean, manageable short links, generate instant QR codes, and monitor link analytics.
+
+## Core Features
+- URL Shortening: Convert long, complex URLs into short, shareable links.
+- Custom Aliases: Create personalized slugs for branded links.
+- QR Code Generation: Instantly generate QR codes for any shortened link.
+- Link Analytics: Track total clicks, creation date, and last accessed timestamp.
+- Link Expiration: Set optional expiration periods in days.
+
+## API Documentation
+- `POST /api/shorten`: Create a new short URL.
+  - Headers: `Content-Type: application/json`
+  - Body:
+    - `originalUrl` (string, required): The target URL (must include http:// or https://).
+    - `customAlias` (string, optional): Desired custom short code (alphanumeric, 4-20 chars).
+    - `expiresIn` (number, optional): Link expiry duration in days (1-365).
+  - Response: JSON object containing `shortUrl`, `shortCode`, `originalUrl`, and `createdAt`.
+
+- `GET /api/stats/:shortCode`: Get analytics for a shortened URL.
+  - Parameters: `shortCode` (string, required).
+  - Response: JSON object containing `originalUrl`, `clicks`, `createdAt`, and `expiresAt`.
+
+- `DELETE /api/url/:shortCode`: Delete a shortened URL.
+  - Parameters: `shortCode` (string, required).
+
+- `GET /:shortCode`: Redirect to the original destination URL.
+
+## Website Links
+- [Shortify Homepage](https://mmurlshortner.qd.je/): Main application interface.
+- [Robots Configuration](https://mmurlshortner.qd.je/robots.txt): Search crawler directives.
+- [Sitemap](https://mmurlshortner.qd.je/sitemap.xml): XML sitemap for search engines.

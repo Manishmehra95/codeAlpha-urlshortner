@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Link Not Found | Shortify</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .error-page {
+            text-align: center;
+            padding: 4rem 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <main class="card glassmorphism error-page">
+            <h1 class="error-code">404</h1>
+            <h2>Link Not Found or Expired</h2>
+            <p style="margin: 1.5rem 0; color: var(--text-secondary);">The short link you are looking for does not exist, has expired, or was removed.</p>
+            <a href="/" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 0.8rem 1.8rem; border-radius: var(--radius-md);">Go Back Home</a>
+        </main>
+    </div>
+</body>
+</html>

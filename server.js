@@ -41,6 +41,22 @@ app.use(express.static(path.join(__dirname, 'public'), {
     }
 }));
 
+// Dedicated routes for robots, sitemap, and Agentic Browsing (llms.txt)
+app.get(['/llms.txt', '/.well-known/llms.txt'], (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', 'llms.txt'));
+});
+
+app.get('/robots.txt', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
+});
+
+app.get('/sitemap.xml', (req, res) => {
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
+});
+
 // API Routes
 app.use('/api', urlRoutes);
 
