@@ -17,6 +17,8 @@ const connectDB = require('./config/db');
 const urlRoutes = require('./routes/urlRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const SiteStats = require('./models/siteStats');
+const SeoConfig = require('./models/seoConfig');
+const fs = require('fs');
 
 // Initialize Express app
 const app = express();
@@ -60,9 +62,34 @@ app.get('/sitemap.xml', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sitemap.xml'));
 });
 
-// Track website visitors on root hit
-app.get('/', (req, res, next) => {
+// Track website visitors and serve dynamic SEO tags if configured
+app.get('/', async (req, res, next) => {
     SiteStats.recordVisit().catch(err => console.error('Visit track error:', err));
+    try {
+        const seo = await SeoConfig.findOne({ identifier: 'site_seo' });
+        if (seo && (seo.title || seo.description)) {
+            let html = await fs.promises.readFile(path.join(__dirname, 'public', 'index.html'), 'utf8');
+            if (seo.title) {
+                html = html.replace(/<title>.*?<\/title>/, `<title>${seo.title}</title>`)
+                           .replace(/<meta name="title" content=".*?"\s*\/?>/, `<meta name="title" content="${seo.title}">`)
+                           .replace(/<meta property="og:title" content=".*?"\s*\/?>/, `<meta property="og:title" content="${seo.title}">`)
+                           .replace(/<meta property="twitter:title" content=".*?"\s*\/?>/, `<meta property="twitter:title" content="${seo.title}">`);
+            }
+            if (seo.description) {
+                html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, `<meta name="description" content="${seo.description}">`)
+                           .replace(/<meta property="og:description" content=".*?"\s*\/?>/, `<meta property="og:description" content="${seo.description}">`)
+                           .replace(/<meta property="twitter:description" content=".*?"\s*\/?>/, `<meta property="twitter:description" content="${seo.description}">`);
+            }
+            if (seo.keywords) {
+                html = html.replace(/<meta name="keywords" content=".*?"\s*\/?>/, `<meta name="keywords" content="${seo.keywords}">`);
+            }
+            res.setHeader('Content-Type', 'text/html; charset=utf-8');
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+            return res.send(html);
+        }
+    } catch (e) {
+        console.error('Dynamic SEO injection error:', e);
+    }
     next();
 });
 

@@ -1,5 +1,8 @@
 const Url = require('../models/url');
 const SiteStats = require('../models/siteStats');
+const SeoConfig = require('../models/seoConfig');
+const fs = require('fs');
+const path = require('path');
 
 // Default admin password (can be overridden in .env with ADMIN_PASSWORD)
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
@@ -119,8 +122,87 @@ const deleteUrl = async (req, res) => {
     }
 };
 
+/**
+ * Get Current SEO Configurations
+ */
+const getSeo = async (req, res) => {
+    try {
+        const authHeader = req.headers['x-admin-key'] || req.query.key;
+        if (authHeader !== ADMIN_PASSWORD) {
+            return res.status(401).json({ success: false, error: 'Unauthorized access' });
+        }
+
+        let seo = await SeoConfig.findOne({ identifier: 'site_seo' });
+        if (!seo) {
+            seo = await SeoConfig.create({ identifier: 'site_seo' });
+        }
+        res.json({ success: true, data: seo });
+    } catch (err) {
+        res.status(500).json({ success: false, error: 'Failed to get SEO data' });
+    }
+};
+
+/**
+ * Update SEO Configurations (Title, Description, Keywords)
+ */
+const updateSeo = async (req, res) => {
+    try {
+        const authHeader = req.headers['x-admin-key'];
+        if (authHeader !== ADMIN_PASSWORD) {
+            return res.status(401).json({ success: false, error: 'Unauthorized access' });
+        }
+
+        const { title, description, keywords } = req.body;
+        if (!title || !title.trim()) {
+            return res.status(400).json({ success: false, error: 'Title tag cannot be empty' });
+        }
+
+        let seo = await SeoConfig.findOne({ identifier: 'site_seo' });
+        if (!seo) {
+            seo = new SeoConfig({ identifier: 'site_seo' });
+        }
+
+        seo.title = title.trim();
+        if (description !== undefined) seo.description = description.trim();
+        if (keywords !== undefined) seo.keywords = keywords.trim();
+        seo.updatedAt = new Date();
+        await seo.save();
+
+        // Also sync disk index.html if possible
+        try {
+            const htmlPath = path.join(__dirname, '..', 'public', 'index.html');
+            let html = await fs.promises.readFile(htmlPath, 'utf8');
+
+            html = html.replace(/<title>.*?<\/title>/, `<title>${seo.title}</title>`)
+                       .replace(/<meta name="title" content=".*?"\s*\/?>/, `<meta name="title" content="${seo.title}">`)
+                       .replace(/<meta property="og:title" content=".*?"\s*\/?>/, `<meta property="og:title" content="${seo.title}">`)
+                       .replace(/<meta property="twitter:title" content=".*?"\s*\/?>/, `<meta property="twitter:title" content="${seo.title}">`);
+
+            if (seo.description) {
+                html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, `<meta name="description" content="${seo.description}">`)
+                           .replace(/<meta property="og:description" content=".*?"\s*\/?>/, `<meta property="og:description" content="${seo.description}">`)
+                           .replace(/<meta property="twitter:description" content=".*?"\s*\/?>/, `<meta property="twitter:description" content="${seo.description}">`);
+            }
+            if (seo.keywords) {
+                html = html.replace(/<meta name="keywords" content=".*?"\s*\/?>/, `<meta name="keywords" content="${seo.keywords}">`);
+            }
+
+            await fs.promises.writeFile(htmlPath, html, 'utf8');
+        } catch (fileErr) {
+            console.error('File write note (read-only environment?):', fileErr.message);
+        }
+
+        res.json({ success: true, message: 'SEO configuration updated successfully', data: seo });
+    } catch (err) {
+        console.error('Update SEO error:', err);
+        res.status(500).json({ success: false, error: 'Failed to update SEO' });
+    }
+};
+
 module.exports = {
     login,
     getStats,
-    deleteUrl
+    deleteUrl,
+    getSeo,
+    updateSeo
 };

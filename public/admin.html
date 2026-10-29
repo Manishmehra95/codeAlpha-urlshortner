@@ -197,6 +197,65 @@
             </div>
         </div>
 
+        <!-- SEO Meta Tags & Title Editor -->
+        <div class="section-card">
+            <div class="section-title">
+                <i class="fas fa-edit" style="color: var(--primary);"></i>
+                Edit SEO Title &amp; Meta Tags
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;">
+                Yahan se aap live website ka Google Title Tag (&lt;title&gt;), Meta Description aur Keywords direct update kar sakte hain. Changes turant Google Search bot aur visitors ke liye live ho jaate hain.
+            </p>
+
+            <!-- Google Search Live Preview Card -->
+            <div style="background: rgba(100, 116, 139, 0.04); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
+                    <i class="fab fa-google"></i> Google Search Results Live Preview
+                </div>
+                <div style="font-size: 0.85rem; color: #4b5563; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="display:inline-block; width:18px; height:18px; border-radius:50%; background:var(--primary); text-align:center; font-size:10px; color:#fff; line-height:18px; font-weight:700;">S</span>
+                    <span>https://mmurlshortner.qd.je</span>
+                </div>
+                <div id="serpTitle" style="font-size: 1.15rem; font-weight: 600; color: #1a0dab; text-decoration: underline; margin-bottom: 0.35rem; cursor: pointer; word-break: break-word;">
+                    Shortify | Free Fast URL Shortener &amp; QR Code Generator
+                </div>
+                <div id="serpDesc" style="font-size: 0.875rem; color: #4b5563; line-height: 1.4; word-break: break-word;">
+                    Shortify is a free, lightning-fast, and secure URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant QR codes, and click tracking.
+                </div>
+            </div>
+
+            <!-- SEO Input Form -->
+            <div style="display: grid; gap: 1rem;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <label for="seoTitleInput" style="font-weight: 600; font-size: 0.9rem;">SEO Page Title (&lt;title&gt;):</label>
+                        <span id="titleCount" style="font-size: 0.75rem; color: var(--text-muted);">0 / 60 chars</span>
+                    </div>
+                    <input type="text" id="seoTitleInput" class="input-box" style="margin-bottom:0;" placeholder="e.g. Shortify | Free Fast URL Shortener &amp; QR Code Generator">
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem;">
+                        <label for="seoDescInput" style="font-weight: 600; font-size: 0.9rem;">Meta Description:</label>
+                        <span id="descCount" style="font-size: 0.75rem; color: var(--text-muted);">0 / 160 chars</span>
+                    </div>
+                    <textarea id="seoDescInput" class="input-box" rows="3" style="margin-bottom:0; resize:vertical;" placeholder="Enter meta description for search engines..."></textarea>
+                </div>
+
+                <div>
+                    <label for="seoKeywordsInput" style="font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 0.4rem;">Meta Keywords (comma separated):</label>
+                    <input type="text" id="seoKeywordsInput" class="input-box" style="margin-bottom:0;" placeholder="Shortify, URL Shortener, Free Link Shortener, QR Code">
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                    <button id="saveSeoBtn" class="btn btn-primary"><i class="fas fa-save"></i> Save SEO Settings</button>
+                    <span id="seoSaveMsg" style="display:none; color: var(--success); font-weight: 600; font-size: 0.9rem;">
+                        <i class="fas fa-check-circle"></i> SEO Settings Updated &amp; Live!
+                    </span>
+                </div>
+            </div>
+        </div>
+
         <!-- Links Directory -->
         <div class="section-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:1rem;">
@@ -299,11 +358,95 @@
 
                 allUrls = urls || [];
                 renderTable(allUrls);
+                fetchSeo(key);
 
             } catch (err) {
                 console.error(err);
             }
         }
+
+        // SEO Editor Elements & Logic
+        const seoTitleInput = document.getElementById('seoTitleInput');
+        const seoDescInput = document.getElementById('seoDescInput');
+        const seoKeywordsInput = document.getElementById('seoKeywordsInput');
+        const serpTitle = document.getElementById('serpTitle');
+        const serpDesc = document.getElementById('serpDesc');
+        const titleCount = document.getElementById('titleCount');
+        const descCount = document.getElementById('descCount');
+        const saveSeoBtn = document.getElementById('saveSeoBtn');
+        const seoSaveMsg = document.getElementById('seoSaveMsg');
+
+        function updateSerpPreview() {
+            const titleVal = seoTitleInput.value.trim() || 'Shortify | Free Fast URL Shortener & QR Code Generator';
+            const descVal = seoDescInput.value.trim() || 'Shortify is a free, lightning-fast, and secure URL Shortener. Convert long links into easy-to-share short URLs with custom aliases, instant QR codes, and click tracking.';
+            
+            serpTitle.textContent = titleVal;
+            serpDesc.textContent = descVal;
+            
+            titleCount.textContent = `${seoTitleInput.value.length} / 60 chars`;
+            descCount.textContent = `${seoDescInput.value.length} / 160 chars`;
+
+            titleCount.style.color = seoTitleInput.value.length > 60 ? 'var(--danger)' : 'var(--text-muted)';
+            descCount.style.color = seoDescInput.value.length > 160 ? 'var(--danger)' : 'var(--text-muted)';
+        }
+
+        seoTitleInput.addEventListener('input', updateSerpPreview);
+        seoDescInput.addEventListener('input', updateSerpPreview);
+
+        async function fetchSeo(key) {
+            try {
+                const res = await fetch('/api/admin/seo', {
+                    headers: { 'x-admin-key': key }
+                });
+                const d = await res.json();
+                if (d.success && d.data) {
+                    seoTitleInput.value = d.data.title || '';
+                    seoDescInput.value = d.data.description || '';
+                    seoKeywordsInput.value = d.data.keywords || '';
+                    updateSerpPreview();
+                }
+            } catch (e) {
+                console.error('Fetch SEO error:', e);
+            }
+        }
+
+        saveSeoBtn.addEventListener('click', async () => {
+            const key = sessionStorage.getItem('shortify_admin_key');
+            const title = seoTitleInput.value.trim();
+            const description = seoDescInput.value.trim();
+            const keywords = seoKeywordsInput.value.trim();
+
+            if (!title) {
+                alert('Title tag cannot be empty!');
+                return;
+            }
+
+            saveSeoBtn.disabled = true;
+            saveSeoBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                const res = await fetch('/api/admin/seo', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-admin-key': key
+                    },
+                    body: JSON.stringify({ title, description, keywords })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    seoSaveMsg.style.display = 'inline-block';
+                    setTimeout(() => { seoSaveMsg.style.display = 'none'; }, 4000);
+                } else {
+                    alert(data.error || 'Failed to update SEO');
+                }
+            } catch (e) {
+                alert('Connection error saving SEO');
+            } finally {
+                saveSeoBtn.disabled = false;
+                saveSeoBtn.innerHTML = '<i class="fas fa-save"></i> Save SEO Settings';
+            }
+        });
 
         // Render Links Table
         function renderTable(list) {
