@@ -13,8 +13,8 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Manishmehrashortify@2007';
 const login = async (req, res) => {
     try {
         const { password } = req.body;
-        if (!password) {
-            return res.status(400).json({ success: false, error: 'Password required' });
+        if (!password || typeof password !== 'string' || password.trim() === '') {
+            return res.status(400).json({ success: false, error: 'Password is required' });
         }
         if (password !== ADMIN_PASSWORD) {
             return res.status(401).json({ success: false, error: 'Invalid password' });
@@ -30,9 +30,9 @@ const login = async (req, res) => {
  */
 const getStats = async (req, res) => {
     try {
-        const authHeader = req.headers['x-admin-key'] || req.query.key;
-        if (authHeader !== ADMIN_PASSWORD) {
-            return res.status(401).json({ success: false, error: 'Unauthorized access' });
+        const authHeader = req.headers['x-admin-key'];
+        if (!authHeader || authHeader !== ADMIN_PASSWORD) {
+            return res.status(401).json({ success: false, error: 'Unauthorized: Invalid or missing admin credentials' });
         }
 
         // 1. Visitor Stats
@@ -127,9 +127,9 @@ const deleteUrl = async (req, res) => {
  */
 const getSeo = async (req, res) => {
     try {
-        const authHeader = req.headers['x-admin-key'] || req.query.key;
-        if (authHeader !== ADMIN_PASSWORD) {
-            return res.status(401).json({ success: false, error: 'Unauthorized access' });
+        const authHeader = req.headers['x-admin-key'];
+        if (!authHeader || authHeader !== ADMIN_PASSWORD) {
+            return res.status(401).json({ success: false, error: 'Unauthorized: Invalid or missing admin credentials' });
         }
 
         let seo = await SeoConfig.findOne({ identifier: 'site_seo' });

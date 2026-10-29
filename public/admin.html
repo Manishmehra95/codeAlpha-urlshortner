@@ -118,6 +118,9 @@
                 <h1>Shortify Admin</h1>
             </a>
             <div class="header-actions">
+                <span id="sessionTimerBadge" style="background:#fee2e2; color:#b91c1c; border:1px solid #fecaca; padding:0.35rem 0.75rem; border-radius:8px; font-size:0.8rem; font-weight:700; display:inline-flex; align-items:center; gap:0.35rem;" title="1-minute auto-logout security">
+                    <i class="fas fa-stopwatch"></i> Auto-logout: <span id="timerCountdown">60s</span>
+                </span>
                 <button id="themeBtn" class="btn btn-outline" title="Toggle theme"><i class="fas fa-moon"></i></button>
                 <button id="refreshBtn" class="btn btn-outline" title="Refresh data"><i class="fas fa-sync-alt"></i> Refresh</button>
                 <a href="/" class="btn btn-outline" title="View website"><i class="fas fa-external-link-alt"></i> Website</a>
@@ -300,20 +303,90 @@
         const filterInput = document.getElementById('filterInput');
 
         let allUrls = [];
+        let remainingSeconds = 60;
+        let timerInterval = null;
 
-        // Check stored auth
-        const savedKey = sessionStorage.getItem('shortify_admin_key');
-        if (savedKey) {
-            fetchStats(savedKey);
+        // Auto-logout security timer functions
+        function startAutoLogoutTimer() {
+            clearInterval(timerInterval);
+            remainingSeconds = 60;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                remainingSeconds -= 1;
+                updateTimerDisplay();
+
+                if (remainingSeconds <= 0) {
+                    forceLogout('Security Lock: 1 minute auto-logout triggered. Please enter password again.');
+                }
+            }, 1000);
         }
 
-        // Login Handler
+        function resetActivityTimer() {
+            if (sessionStorage.getItem('shortify_admin_key')) {
+                remainingSeconds = 60;
+                updateTimerDisplay();
+            }
+        }
+
+        // Reset inactivity timer when user interacts with dashboard
+        ['click', 'keydown', 'mousemove', 'scroll', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, resetActivityTimer, { passive: true });
+        });
+
+        function updateTimerDisplay() {
+            const el = document.getElementById('timerCountdown');
+            if (el) el.textContent = `${remainingSeconds}s`;
+        }
+
+        function forceLogout(message = 'Logged out successfully.') {
+            clearInterval(timerInterval);
+            sessionStorage.removeItem('shortify_admin_key');
+            sessionStorage.removeItem('shortify_admin_expires');
+            allUrls = [];
+
+            // Wipe DOM to prevent data leaks
+            const tbody = document.getElementById('urlsTableBody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:2rem; color:var(--text-muted);">Session Locked.</td></tr>';
+            document.getElementById('totalVisits').textContent = '0';
+            document.getElementById('todayVisits').textContent = 'Today: 0';
+            document.getElementById('totalUrls').textContent = '0';
+            document.getElementById('totalClicks').textContent = '0';
+
+            // Hide Dashboard & Show Login Modal
+            dashboardApp.classList.add('hidden');
+            loginModal.classList.remove('hidden');
+            passwordInput.value = '';
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+            passwordInput.focus();
+        }
+
+        // Check stored auth on initial load
+        const savedKey = sessionStorage.getItem('shortify_admin_key');
+        const expiresAt = sessionStorage.getItem('shortify_admin_expires');
+
+        if (savedKey && expiresAt && Date.now() < Number(expiresAt)) {
+            fetchStats(savedKey);
+            startAutoLogoutTimer();
+        } else {
+            forceLogout('Please enter admin password to continue.');
+        }
+
+        // Login Handler with strict verification
         loginBtn.addEventListener('click', handleLogin);
         passwordInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleLogin(); });
 
         async function handleLogin() {
             const pwd = passwordInput.value.trim();
-            if (!pwd) return;
+            if (!pwd) {
+                loginError.textContent = 'Password daalna zaroori hai! Bina password ke login nahi ho sakta.';
+                loginError.style.display = 'block';
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
 
             try {
                 const res = await fetch('/api/admin/login', {
@@ -324,14 +397,21 @@
                 const data = await res.json();
                 if (data.success) {
                     sessionStorage.setItem('shortify_admin_key', pwd);
+                    sessionStorage.setItem('shortify_admin_expires', Date.now() + 60 * 1000);
                     loginError.style.display = 'none';
-                    fetchStats(pwd);
+                    passwordInput.value = '';
+                    await fetchStats(pwd);
+                    startAutoLogoutTimer();
                 } else {
+                    loginError.textContent = 'Galat Password! Sahi password ke bina panel open nahi hoga.';
                     loginError.style.display = 'block';
                 }
             } catch (err) {
                 loginError.textContent = 'Connection error. Please try again.';
                 loginError.style.display = 'block';
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = 'Login to Dashboard';
             }
         }
 
@@ -344,9 +424,7 @@
                 const json = await res.json();
 
                 if (!json.success) {
-                    sessionStorage.removeItem('shortify_admin_key');
-                    loginModal.classList.remove('hidden');
-                    dashboardApp.classList.add('hidden');
+                    forceLogout('Unauthorized access: Invalid admin key.');
                     return;
                 }
 
