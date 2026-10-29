@@ -8,7 +8,7 @@ const seoConfigSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        default: 'Shortify | Free Fast URL Shortener & QR Code Generator'
+        default: 'Shortify'
     },
     description: {
         type: String,
