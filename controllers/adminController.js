@@ -37,6 +37,8 @@ const getStats = async (req, res) => {
 
         // 1. Visitor Stats
         const siteStats = await SiteStats.findOne({ identifier: 'main_stats' }) || { totalVisits: 0, todayVisits: 0 };
+        const todayStr = new Date().toISOString().split('T')[0];
+        const todayVisitsCount = (siteStats.todayDate === todayStr) ? (siteStats.todayVisits || 0) : 0;
 
         // 2. Total URLs Shortened
         const totalUrls = await Url.countDocuments();
@@ -85,7 +87,7 @@ const getStats = async (req, res) => {
             data: {
                 visitors: {
                     total: siteStats.totalVisits || 0,
-                    today: siteStats.todayVisits || 0,
+                    today: todayVisitsCount,
                     lastVisit: siteStats.lastVisitAt || null
                 },
                 totalUrls,

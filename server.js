@@ -33,20 +33,7 @@ app.use(morgan('dev')); // HTTP request logger
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Serve static files from the public directory with smart caching headers
-app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: 0,
-    setHeaders: (res, filePath) => {
-        if (filePath.endsWith('.html') || filePath.match(/\.(css|js)$/)) {
-            // HTML, JS, and CSS always revalidate so updates are instant
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-        } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg|woff2|woff)$/)) {
-            res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
-        }
-    }
-}));
-
-// Dedicated routes for robots, sitemap, manifest, sw, and Agentic Browsing (llms.txt)
+// Fast routes for SEO & browser essentials
 app.get(['/llms.txt', '/.well-known/llms.txt'], (req, res) => {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
     res.sendFile(path.join(__dirname, 'public', 'llms.txt'));
@@ -72,41 +59,94 @@ app.get('/sw.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sw.js'));
 });
 
-// Track website visitors and serve dynamic SEO tags if configured
-app.get('/', async (req, res, next) => {
-    SiteStats.recordVisit().catch(err => console.error('Visit track error:', err));
-    try {
-        const seo = await SeoConfig.findOne({ identifier: 'site_seo' });
-        if (seo && (seo.title || seo.description)) {
-            let html = await fs.promises.readFile(path.join(__dirname, 'public', 'index.html'), 'utf8');
-            if (seo.title) {
-                html = html.replace(/<title>.*?<\/title>/, `<title>${seo.title}</title>`)
-                           .replace(/<meta name="title" content=".*?"\s*\/?>/, `<meta name="title" content="${seo.title}">`)
-                           .replace(/<meta property="og:title" content=".*?"\s*\/?>/, `<meta property="og:title" content="${seo.title}">`)
-                           .replace(/<meta property="twitter:title" content=".*?"\s*\/?>/, `<meta property="twitter:title" content="${seo.title}">`);
-            }
-            if (seo.description) {
-                html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, `<meta name="description" content="${seo.description}">`)
-                           .replace(/<meta property="og:description" content=".*?"\s*\/?>/, `<meta property="og:description" content="${seo.description}">`)
-                           .replace(/<meta property="twitter:description" content=".*?"\s*\/?>/, `<meta property="twitter:description" content="${seo.description}">`);
-            }
-            if (seo.keywords) {
-                html = html.replace(/<meta name="keywords" content=".*?"\s*\/?>/, `<meta name="keywords" content="${seo.keywords}">`);
-            }
-            res.setHeader('Content-Type', 'text/html; charset=utf-8');
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
-            return res.send(html);
-        }
-    } catch (e) {
-        console.error('Dynamic SEO injection error:', e);
-    }
-    next();
-});
-
 // Admin Panel Web Route
 app.get('/admin', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
+
+// Helper to filter out automated bots/crawlers from inflating visitor counts
+const isBot = (ua) => {
+    if (!ua) return false;
+    return /bot|crawler|spider|crawling|lighthouse|uptime|pingdom|googlebot|bingbot|yahoo|duckduckbot|baiduspider|yandexbot/i.test(ua);
+};
+
+// Track website visitors and serve dynamic SEO tags on homepage
+app.get(['/', '/index.html'], async (req, res) => {
+    // 1. Record real visitor visit
+    const userAgent = req.headers['user-agent'] || '';
+    if (!isBot(userAgent)) {
+        try {
+            await SiteStats.recordVisit();
+        } catch (err) {
+            console.error('Visit track error on GET /:', err);
+        }
+    }
+
+    // 2. Read and dynamically inject SEO tags into index.html
+    try {
+        let html = await fs.promises.readFile(path.join(__dirname, 'public', 'index.html'), 'utf8');
+        try {
+            const seo = await SeoConfig.findOne({ identifier: 'site_seo' });
+            if (seo) {
+                if (seo.title) {
+                    html = html.replace(/<title>.*?<\/title>/, `<title>${seo.title}</title>`)
+                               .replace(/<meta name="title" content=".*?"\s*\/?>/, `<meta name="title" content="${seo.title}">`)
+                               .replace(/<meta property="og:title" content=".*?"\s*\/?>/, `<meta property="og:title" content="${seo.title}">`)
+                               .replace(/<meta property="twitter:title" content=".*?"\s*\/?>/, `<meta property="twitter:title" content="${seo.title}">`);
+                }
+                if (seo.description) {
+                    html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, `<meta name="description" content="${seo.description}">`)
+                               .replace(/<meta property="og:description" content=".*?"\s*\/?>/, `<meta property="og:description" content="${seo.description}">`)
+                               .replace(/<meta property="twitter:description" content=".*?"\s*\/?>/, `<meta property="twitter:description" content="${seo.description}">`);
+                }
+                if (seo.keywords) {
+                    html = html.replace(/<meta name="keywords" content=".*?"\s*\/?>/, `<meta name="keywords" content="${seo.keywords}">`);
+                }
+            }
+        } catch (seoErr) {
+            console.error('Dynamic SEO fetch error:', seoErr);
+        }
+
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        return res.send(html);
+    } catch (readErr) {
+        console.error('Error reading index.html:', readErr);
+        return res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    }
+});
+
+// Client-Side Visit Ping API (for PWA, mobile background cache, and instant tracking)
+app.post('/api/track-visit', async (req, res) => {
+    const userAgent = req.headers['user-agent'] || '';
+    if (isBot(userAgent)) {
+        return res.json({ success: true, ignored: 'bot' });
+    }
+    try {
+        const stats = await SiteStats.recordVisit();
+        res.json({
+            success: true,
+            totalVisits: stats.totalVisits,
+            todayVisits: stats.todayVisits
+        });
+    } catch (e) {
+        console.error('API track visit error:', e);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
+
+// Serve static assets with index: false so express.static NEVER overrides '/'
+app.use(express.static(path.join(__dirname, 'public'), {
+    index: false,
+    maxAge: 0,
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html') || filePath.match(/\.(css|js)$/)) {
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        } else if (filePath.match(/\.(png|jpg|jpeg|gif|ico|svg|woff2|woff)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=604800, immutable');
+        }
+    }
+}));
 
 // API Routes
 app.use('/api/admin', adminRoutes);
