@@ -59,8 +59,9 @@ app.get('/sw.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sw.js'));
 });
 
-// Admin Panel Web Route
-app.get('/admin', (req, res) => {
+// Admin Panel Web Routes (accessible via /admin, /dashboard, /portal)
+app.get(['/admin', '/dashboard', '/portal'], (req, res) => {
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
