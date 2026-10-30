@@ -33,6 +33,19 @@ app.use(morgan('dev')); // HTTP request logger
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
+// Ensure database is ready before handling database-dependent routes
+app.use(async (req, res, next) => {
+    // Only wait for DB on API, admin, and redirect routes (skip static assets)
+    if (req.path.startsWith('/api') || req.path === '/' || req.path.startsWith('/admin') || req.path.startsWith('/dashboard')) {
+        try {
+            await connectDB();
+        } catch (err) {
+            console.error('Database connection error in request middleware:', err.message);
+        }
+    }
+    next();
+});
+
 // Fast routes for SEO & browser essentials
 app.get(['/llms.txt', '/.well-known/llms.txt'], (req, res) => {
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');

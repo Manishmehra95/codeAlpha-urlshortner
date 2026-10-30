@@ -432,7 +432,12 @@
                 const json = await res.json();
 
                 if (!json.success) {
-                    forceLogout('Unauthorized access: Invalid admin key.');
+                    if (res.status === 401) {
+                        forceLogout('Unauthorized access: Invalid admin key.');
+                    } else {
+                        loginError.textContent = json.error || 'Server error loading data. Please try again.';
+                        loginError.style.display = 'block';
+                    }
                     return;
                 }
 
@@ -451,6 +456,8 @@
 
             } catch (err) {
                 console.error(err);
+                loginError.textContent = 'Connection error loading stats. Please refresh.';
+                loginError.style.display = 'block';
             }
         }
 

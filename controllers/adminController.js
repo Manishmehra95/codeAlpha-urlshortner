@@ -98,7 +98,7 @@ const getStats = async (req, res) => {
         });
     } catch (err) {
         console.error('Admin stats error:', err);
-        res.status(500).json({ success: false, error: 'Failed to retrieve stats' });
+        res.status(500).json({ success: false, error: err.message || 'Failed to retrieve stats' });
     }
 };
 
