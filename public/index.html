@@ -37,14 +37,59 @@
       "@type": "WebApplication",
       "name": "Shortify",
       "url": "https://shortifyurlshortner.vercel.app/",
-      "description": "Shortify is a fast, free, and secure link shortener with custom alias and QR code generator.",
+      "description": "Shortify is a fast, free, and secure link shortener with custom alias, click tracking analytics, and instant QR code generator.",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "All",
+      "author": {
+        "@type": "Person",
+        "name": "Manish Mehra",
+        "url": "https://manishmehraportfolio.vercel.app/"
+      },
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD"
       }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Shortify URL Shortener completely free to use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, Shortify is 100% free. You can shorten unlimited URLs, set custom aliases, generate high-resolution QR codes, and track link clicks without creating an account."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I create a custom short link and QR code?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste your long URL into the input box, open Advanced Options to type an optional custom alias or link expiration in days, and click Shorten URL. Shortify immediately generates both your short link and a downloadable PNG QR code."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I set an expiration date on shortened links?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Under Advanced Options, you can specify the number of days (1 to 365) after which the short URL will automatically expire."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Shortify provide real-time click analytics?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, every shortened link tracks total clicks in real time so you can measure engagement across WhatsApp, Instagram, YouTube, LinkedIn, and marketing campaigns."
+          }
+        }
+      ]
     }
     </script>
 
@@ -65,8 +110,8 @@
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
 
     <!-- Preload Critical CSS with cache-busting -->
-    <link rel="preload" href="style.css?v=2.1" as="style">
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="preload" href="style.css?v=2.2" as="style">
+    <link rel="stylesheet" href="style.css?v=2.2">
 
     <!-- Non-blocking Lazy Load for Google AdSense (Prevents CLS & Speed drops) -->
     <script>
@@ -257,6 +302,56 @@
                 <i class="fas fa-qrcode"></i>
                 <h3>QR Codes</h3>
                 <p>Generate QR codes for your shortened URLs</p>
+            </div>
+        </section>
+
+        <!-- SEO Content: How It Works & About Shortify -->
+        <section class="seo-section glassmorphism" aria-label="About Shortify URL Shortener">
+            <h2 class="seo-heading">Free Online URL Shortener &amp; Custom Link Generator</h2>
+            <p class="seo-intro">
+                <strong>Shortify</strong> is a free, fast, and reliable URL shortener built for creators, marketers, students, and businesses. Turn messy, long web addresses into clean, memorable short links in seconds — complete with custom aliases, optional link expiration, real-time click tracking, and instant downloadable QR codes.
+            </p>
+
+            <h3 class="seo-subheading">How to Shorten a Link in 3 Simple Steps</h3>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <span class="step-badge">1</span>
+                    <h4>Paste Your Long URL</h4>
+                    <p>Copy any long link from YouTube, Instagram, Google Drive, GitHub, or your website and paste it into the Shortify link box above.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-badge">2</span>
+                    <h4>Customize (Optional)</h4>
+                    <p>Open <strong>Advanced Options</strong> to add your own branded custom alias (e.g., <code>/my-link</code>) or set an automatic expiration timer in days.</p>
+                </div>
+                <div class="step-card">
+                    <span class="step-badge">3</span>
+                    <h4>Share &amp; Track Clicks</h4>
+                    <p>Click <strong>Shorten URL</strong> to copy your short link or download its PNG QR code instantly and track live click analytics.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section for Search Snippets & User Help -->
+        <section class="seo-section glassmorphism" aria-label="Frequently Asked Questions">
+            <h2 class="seo-heading">Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <details class="faq-item" open>
+                    <summary>Is Shortify URL Shortener completely free to use?</summary>
+                    <p>Yes, Shortify is 100% free. You can shorten unlimited links, create custom URL aliases, generate QR codes, and view click statistics with no sign-up or hidden limits.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>How do I create a QR code for my shortened link?</summary>
+                    <p>As soon as you click <strong>Shorten URL</strong>, Shortify automatically generates a high-resolution PNG QR code for your short link. Simply click the <strong>Download QR</strong> button to save and share it on posters, flyers, or WhatsApp.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I set an expiration date on my short URLs?</summary>
+                    <p>Yes! Click <strong>Advanced Options</strong> before shortening your link and enter the number of days (between 1 and 365). After that period, the short link will automatically expire.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Does Shortify track how many clicks my link gets?</summary>
+                    <p>Yes, every short link created on Shortify records real-time click counts so you can monitor traffic and audience engagement effortlessly.</p>
+                </details>
             </div>
         </section>
 
