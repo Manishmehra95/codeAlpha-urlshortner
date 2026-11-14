@@ -72,6 +72,12 @@ app.get('/sw.js', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'sw.js'));
 });
 
+// Google Search Console Site Verification Files
+app.get(['/google3c2c5129b6dbc9c8.html', '/googled5cd77b53033fa83.html'], (req, res) => {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.sendFile(path.join(__dirname, 'public', req.path.replace(/^\//, '')));
+});
+
 // Admin Panel Web Routes (accessible via /admin, /dashboard, /portal)
 app.get(['/admin', '/dashboard', '/portal'], (req, res) => {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
